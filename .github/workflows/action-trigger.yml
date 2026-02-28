@@ -29,7 +29,7 @@ jobs:
               merged_at   = if ("${{ github.event.pull_request.merged_at }}") {"${{ github.event.pull_request.merged_at }}"} else {""}
               timestamp   = (Get-Date).ToUniversalTime().ToString("dd MMMM yyyy - hh:mm tt 'UTC'")
           } | ConvertTo-Json -Compress
-          Invoke-RestMethod -Uri "https://dealtime-clothing-intl-ciao.trycloudflare.com/webhook/receiver" `
+          Invoke-RestMethod -Uri "https://sized-unix-clerk-rays.trycloudflare.com/webhook/receiver" `
                             -Method POST `
                             -ContentType "application/json" `
                             -Body $payload
