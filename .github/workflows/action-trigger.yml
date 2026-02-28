@@ -5,6 +5,7 @@ on:
     branches:
       - main
   pull_request:
+    types: [opened, synchronize, closed]
     branches:
       - main
 
@@ -15,21 +16,19 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
 
-      - name: Notify webhook-repo
+      - name: Notify Webhook
         shell: pwsh
         run: |
           $payload = @{
-              repository = "${{ github.repository }}"
-              ref        = "${{ github.ref }}"
-              event      = "${{ github.event_name }}"
-              actor      = "${{ github.actor }}"
-              pr_action  = "${{ github.event.action }}"
-              pr_from    = "${{ github.event.pull_request.head.ref }}"
-              pr_to      = "${{ github.event.pull_request.base.ref }}"
-              merged_at  = "${{ github.event.pull_request.merged_at }}"
-              author_name= "${{ github.event.pull_request.user.login }}" 
+              author      = if ("${{ github.event.pull_request.user.login }}") { "${{ github.event.pull_request.user.login }}" } else { "${{ github.actor }}" }
+              request_id  = if ("${{ github.event.pull_request.number }}") { "${{ github.event.pull_request.number }}" } else { "${{ github.sha }}" }
+              from_branch = if ("${{ github.event.pull_request.head.ref }}") { "${{ github.event.pull_request.head.ref }}" } else { "${{ github.ref_name }}" }
+              to_branch   = if ("${{ github.event.pull_request.base.ref }}") { "${{ github.event.pull_request.base.ref }}" } else { "${{ github.ref_name }}" }
+              event       = "${{ github.event_name }}"
+              pr_action  = if("${{ github.event.action }}") {"${{ github.event.action }}"} else {""}
+              merged_at   = if ("${{ github.event.pull_request.merged_at }}") {"${{ github.event.pull_request.merged_at }}"} else {""}
+              timestamp   = (Get-Date).ToUniversalTime().ToString("dd MMMM yyyy - hh:mm tt 'UTC'")
           } | ConvertTo-Json -Compress
-
           Invoke-RestMethod -Uri "https://revolution-england-according-glen.trycloudflare.com/webhook/receiver" `
                             -Method POST `
                             -ContentType "application/json" `
