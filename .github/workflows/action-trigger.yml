@@ -1,4 +1,5 @@
 name: Notify Webhook
+
 on:
   push:
     branches:
@@ -13,10 +14,11 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v5
+
       - name: Notify webhook-repo
         run: |
-          curl.exe -X POST https://revolution-england-according-glen.trycloudflare.com/ ^
-            -H "Content-Type: application/json" ^
+          curl.exe -X POST https://revolution-england-according-glen.trycloudflare.com/ `
+            -H "Content-Type: application/json" `
             -d "{
               \"repository\": \"${{ github.repository }}\",
               \"ref\": \"${{ github.ref }}\",
