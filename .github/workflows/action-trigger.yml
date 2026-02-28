@@ -14,20 +14,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v5
       - name: Notify webhook-repo
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ secrets.WEBHOOK_URL }}
-          method: POST
-          contentType: 'application/json'
-          body: |
-            {
-              "repository": "${{ github.repository }}",
-              "ref": "${{ github.ref }}",
-              "event": "${{ github.event_name }}",
-              "actor": "${{ github.actor }}",
-              "pr_action": "${{ github.event.action || '' }}",
-              "pr_from": "${{ github.event.pull_request.head.ref || '' }}",
-              "pr_to": "${{ github.event.pull_request.base.ref || '' }}",
-              "merged_at": "${{ github.event.pull_request.merged_at || '' }}",
-              "author_name": "${{ github.event.pull_request.user.login || github.actor }}"
-            }
+        run: |
+          curl.exe -X POST https://revolution-england-according-glen.trycloudflare.com/ ^
+            -H "Content-Type: application/json" ^
+            -d "{
+              \"repository\": \"${{ github.repository }}\",
+              \"ref\": \"${{ github.ref }}\",
+              \"event\": \"${{ github.event_name }}\",
+              \"actor\": \"${{ github.actor }}\",
+              \"pr_action\": \"${{ github.event.action || '' }}\",
+              \"pr_from\": \"${{ github.event.pull_request.head.ref || '' }}\",
+              \"pr_to\": \"${{ github.event.pull_request.base.ref || '' }}\",
+              \"merged_at\": \"${{ github.event.pull_request.merged_at || '' }}\",
+              \"author_name\": \"${{ github.event.pull_request.user.login || github.actor }}\"
+            }"
